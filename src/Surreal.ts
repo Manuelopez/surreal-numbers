@@ -141,5 +141,41 @@ export class Surreal {
     return new Surreal(new Set(left), new Set(right));
   }
 
+  private static getAllSubsets(set: number[]) {
+    const arr: number[] = [];
+    return set.reduce(
+      (subsets, value) => subsets.concat(subsets.map((set) => [value, ...set])),
+      [arr]
+    );
+  }
+
+  static *generate(birthday: number) {
+    let nBirthday = 0;
+    let formSeen = new Set<number>();
+
+    while (nBirthday <= birthday) {
+      let forms = this.getAllSubsets(Array.from(formSeen));
+      for (let l of forms) {
+        for (let r of forms) {
+          try {
+            let sur = new Surreal(new Set(l), new Set(r));
+            console.log(formSeen.has(sur.calcValue()!));
+            if (!formSeen.has(sur.calcValue()!)) formSeen.add(sur.calcValue()!);
+            console.log(forms);
+            yield sur;
+          } catch (error) {
+            continue;
+          }
+        }
+      }
+
+      console.log(
+        `Birthday on ${nBirthday} [${Array.from(formSeen).join(', ')}]`
+      );
+
+      nBirthday++;
+    }
+  }
+
   //DIVISION NEEDS SEQUENCE MULTIPLICATION
 }
